@@ -6,7 +6,7 @@ This project provide service upload video and capture image preview
 
 ### How do I get set up? ###
 ```bash
-	git clone https://Kim1090@bitbucket.org/Kim1090/video-upload.git
+	git clone https://github.com/Playwork/video-upload.git
 ```
 
 ```bash
