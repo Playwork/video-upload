@@ -1,0 +1,20 @@
+{
+  "name": "video-upload",
+  "version": "1.0.0",
+  "description": "upload video",
+  "main": "server.js",
+  "private": true,
+  "scripts": {},
+  "dependencies": {
+    "aws-sdk": "^2.156.0",
+    "busboy": "^0.2.14",
+    "child_process": "^1.0.2",
+    "fs": "0.0.1-security",
+    "http": "0.0.0",
+    "path": "^0.12.7",
+    "routes": "^2.1.0",
+    "util": "^0.10.3",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {}
+}
