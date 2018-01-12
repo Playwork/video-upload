@@ -13,7 +13,8 @@ const config = require('./config');
 const previewImage = (file, filename) => {
   const previewSmall = `${config.imagePath}/small_${filename}.jpg`;
   const previewBig = `${config.imagePath}/big_${filename}.jpg`;
-  exec(`/usr/local/bin/ffmpeg -loglevel panic -y -i "${file}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
+  // /usr/local/bin/ffmpeg
+  exec(`/usr/bin/ffmpeg -loglevel panic -y -i "${file}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
     if (error) {
       console.log('--------err cut preview image----------', error);
     };
@@ -49,12 +50,13 @@ router.addRoute('/upload-video', function (req, res, params) {
     busboy.on('finish', function() {
       if(saveTo) {
         const returnPath = saveTo.split('html');
-        previewImage(saveTo, newFileName);
-        res.writeHead(200, { 'Connection': 'close' });
-        res.end(JSON.stringify({
+        const responseData = JSON.stringify({
           url: returnPath[1],
           vodId: newFileName
-        }));
+        });
+        previewImage(saveTo, newFileName);
+        res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
+        res.end(responseData);
       } else {
         res.writeHead(500, { Connection: 'close' });
         res.end('please upload file video');
