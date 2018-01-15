@@ -86,10 +86,7 @@ app.get('/delete-video', function (req, res) {
     const imageSmall = `${config.imagePath}/small_${req.query.fileId}.jpg`;
     const imageBig = `${config.imagePath}/big_${req.query.fileId}.jpg`;
     const video = `${config.vodPath}/${req.query.fileId}.mp4`
-
-    console.log('---imageSmall--->>', imageSmall);
-    console.log('---imageBig--->>', imageBig);
-
+    
     exec(`rm -rf ${imageSmall} ${imageBig} ${video}`,function(error, stdout, stderr) {
       if (error) {
         console.log('--------err delete images and video----------', error);
