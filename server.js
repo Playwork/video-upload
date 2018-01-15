@@ -14,8 +14,8 @@ const previewImage = (file, filename) => {
   const previewSmall = `${config.imagePath}/small_${filename}.jpg`;
   const previewBig = `${config.imagePath}/big_${filename}.jpg`;
   // ffmpeg local path : /usr/local/bin/ffmpeg
-  // ffmpeg server : usr/bin/ffmpeg
-  exec(`/usr/local/bin/ffmpeg -loglevel panic -y -i "${file}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
+  // ffmpeg server : /usr/bin/ffmpeg
+  exec(`/usr/bin/ffmpeg -loglevel panic -y -i "${file}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
     if (error) {
       console.log('--------err cut preview image----------', error);
     };
