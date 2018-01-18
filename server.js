@@ -15,10 +15,11 @@ const previewImage = (file, filename) => {
   const previewBig = `${config.imagePath}/big_${filename}.jpg`;
   // ffmpeg local path : /usr/local/bin/ffmpeg
   // ffmpeg server : /usr/bin/ffmpeg
-  exec(`/usr/bin/ffmpeg -loglevel panic -y -i "${file}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
+  exec(`/usr/local/bin/ffmpeg -loglevel panic -y -i "${file}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
     if (error) {
       console.log('--------err cut preview image----------', error);
     };
+    return;
   });
 };
 
@@ -60,9 +61,11 @@ app.post('/upload-video', function (req, res) {
           url: returnPath[1],
           vodId: newFileName
         });
-        previewImage(saveTo, newFileName);
-        res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
-        res.end(responseData);
+        Promise.resolve(previewImage(saveTo, newFileName))
+          .then(() => {
+            res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
+            res.end(responseData);
+          });
       } else {
         res.writeHead(500, { Connection: 'close' });
         res.end('please upload file video');
