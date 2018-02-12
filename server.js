@@ -58,7 +58,7 @@ app.post('/upload-video', function (req, res) {
       if(saveTo) {
         const returnPath = saveTo.split('html');
         const responseData = JSON.stringify({
-          url: returnPath[1],
+          url: `/farmsuk/smil:${newFileName}.smil/playlist.m3u8`,
           vodId: newFileName
         });
         const previewSmall = `${config.imagePath}/small_${newFileName}.jpg`;
