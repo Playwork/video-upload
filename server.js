@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid');
 const exec = require('child_process').exec;
-const port = 3002;
+const port = 3000;
 
 const config = require('./config');
 const smil_path = '/var/www/html/vod';
