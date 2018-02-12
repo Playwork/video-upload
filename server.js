@@ -55,7 +55,7 @@ app.post('/upload-video', function (req, res) {
         const previewBig = `${config.imagePath}/big_${newFileName}.jpg`;
         // local: /usr/local/bin/ffmpeg
         // server: /usr/bin/ffmpeg
-        exec(`/usr/local/bin/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
+        exec(`/usr/local/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
           if (error) {
             console.log('--------err cut preview image----------', error);
           };
