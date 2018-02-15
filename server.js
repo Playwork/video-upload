@@ -57,7 +57,7 @@ app.post('/upload-video', function (req, res) {
     busboy.on('finish', function() {
       if(saveTo) {
         const returnPath = saveTo.split('html');
-        const responseData = JSON.stringify({: `/farmsuk/smil:${newFileName}.smil/playlist.m3u8`,
+        const responseData = JSON.stringify({`/farmsuk/smil:${newFileName}.smil/playlist.m3u8`,
           img: `/img/small_${newFileName}.jpg`,
           vodId: newFileName
         });
