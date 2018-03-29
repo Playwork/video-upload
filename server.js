@@ -133,7 +133,7 @@ app.post('/upload-image', function (req, res) {
         await Jimp.read(saveTo).then(function (big) {
             big.resize(700, Jimp.AUTO)
                 .quality(90)
-                .write(previewSmall);
+                .write(previewBig);
 
           })
           .catch(function (err) {
