@@ -100,7 +100,7 @@ app.post('/upload-image', function (req, res) {
         });
       }
     });
-    busboy.on('finish', function() {
+    busboy.on('finish', async () => {
       if(saveTo) {
         const responseData = JSON.stringify({
           filenId: newFileName,
@@ -120,31 +120,29 @@ app.post('/upload-image', function (req, res) {
         // });
         console.log(previewSmall);
         //small
-        Jimp.read(saveTo).then(function (small) {
+        await Jimp.read(saveTo).then(function (small) {
             small.resize(300, Jimp.AUTO)
                  .quality(90)
                  .write(previewSmall);
-
-                 //big
-                 Jimp.read(saveTo).then(function (big) {
-                      big.resize(700, Jimp.AUTO)
-                          .quality(09)
-                          .write(previewSmall);
-
-                          res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
-                          res.end(responseData);
-
-                 }).catch(function (err) {
-                   res.writeHead(500, { Connection: 'close' });
-                   res.end('please upload file image');
-                 });
-
 
         }).catch(function (err) {
           res.writeHead(500, { Connection: 'close' });
           res.end('please upload file image');
         });
+        //big
+        await Jimp.read(saveTo).then(function (big) {
+            big.resize(700, Jimp.AUTO)
+                .quality(90)
+                .write(previewSmall);
 
+          })
+          .catch(function (err) {
+            res.writeHead(500, {Connection: 'close'});
+            res.end('please upload file image');
+          });
+
+          await res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length, });
+          await res.end(responseData);
 
 
       } else {
