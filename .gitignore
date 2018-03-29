@@ -6,3 +6,4 @@ video
 .vscode
 .DS_Store
 config.json
+yarn.lock
