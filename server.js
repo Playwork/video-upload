@@ -177,7 +177,7 @@ app.get('/delete-video', function (req, res) {
       };
     });
     res.writeHead(200, { 'Connection': 'close' });
-    res.end();
+    res.end('ok');
   } else {
     res.writeHead(403, { 'Connection': 'close' });
     res.end('Pleas check file Id');
