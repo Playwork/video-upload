@@ -44,7 +44,7 @@ app.post('/upload-video', function (req, res) {
     });
     busboy.on('finish', function() {
       if(saveTo) {
-        const returnPath = saveTo.split('vod/');
+        const returnPath = saveTo.split('html');
         const responseData = JSON.stringify({
           url: returnPath[1],
           vodId: newFileName
@@ -104,8 +104,8 @@ app.post('/upload-image', function (req, res) {
       if(saveTo) {
         const responseData = JSON.stringify({
           filenId: newFileName,
-          small: `small_${newFileName}.jpg`,
-          big: `big_${newFileName}.jpg`
+          small: `/imgae/small_${newFileName}.jpg`,
+          big: `/image/big_${newFileName}.jpg`
         });
         const previewSmall = `${config.imagePath}/small_${newFileName}.jpg`;
         const previewBig = `${config.imagePath}/big_${newFileName}.jpg`;
