@@ -44,7 +44,7 @@ app.post('/upload-video', function (req, res) {
     });
     busboy.on('finish', function() {
       if(saveTo) {
-        const returnPath = saveTo.split('vod');
+        const returnPath = saveTo.split('vod/');
         const responseData = JSON.stringify({
           url: returnPath[1],
           vodId: newFileName
