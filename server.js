@@ -104,8 +104,8 @@ app.post('/upload-image', function (req, res) {
       if(saveTo) {
         const responseData = JSON.stringify({
           filenId: newFileName,
-          small: `/imgae/small_${newFileName}.jpg`,
-          big: `/image/big_${newFileName}.jpg`
+          small: `/images/small_${newFileName}.jpg`,
+          big: `/images/big_${newFileName}.jpg`
         });
         const previewSmall = `${config.imagePath}/small_${newFileName}.jpg`;
         const previewBig = `${config.imagePath}/big_${newFileName}.jpg`;
@@ -122,13 +122,13 @@ app.post('/upload-image', function (req, res) {
         //small
         Jimp.read(saveTo).then(function (small) {
             small.resize(300, Jimp.AUTO)
-                 .quality(80)
+                 .quality(90)
                  .write(previewSmall);
 
                  //big
                  Jimp.read(saveTo).then(function (big) {
                       big.resize(700, Jimp.AUTO)
-                          .quality(80)
+                          .quality(09)
                           .write(previewSmall);
 
                           res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
