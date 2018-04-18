@@ -45,6 +45,8 @@ app.post('/upload-video', function (req, res) {
         typeOfFile = path.extname(filename);
         newFileName = uuid.v1();
         saveTo = path.join(fullpath, path.basename(`${newFileName}${typeOfFile}`));
+        save_480 = path.join(fullpath, path.basename(`${newFileName}_480${typeOfFile}`));
+        save_720 = path.join(fullpath, path.basename(`${newFileName}_720${typeOfFile}`));
 
         file.pipe(fs.createWriteStream(saveTo));
       } else {
@@ -73,21 +75,56 @@ app.post('/upload-video', function (req, res) {
           res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
           res.end(responseData);
         });
-        exec(`echo \'<?xml version="1.0" encoding="UTF-8"?>\' >> ${smil_path}/${newFileName}${smail_file}`);
+        exec(`echo \'<?xml version="1.0" encoding="UTF-8"?>\' > ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<smil title="${newFileName}">\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<body>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
-        exec(`echo \'<video height="228" src="${newFileName}${typeOfFile}" systemLanguage="en" width="512">\' >> ${smil_path}/${newFileName}${smail_file}`);
-        exec(`echo \'<param name="videoBitrate" value="640000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
+        exec(`echo \'<video height="720" src="${newFileName}${typeOfFile}" systemLanguage="en" width="1280">\' >> ${smil_path}/${newFileName}${smail_file}`);
+        exec(`echo \'<param name="videoBitrate" value="192000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<param name="audioBitrate" value="48000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'</video>\' >> ${smil_path}/${newFileName}${smail_file}`);
-        exec(`echo \'<video height="288" src="${newFileName}${typeOfFile}" systemLanguage="en" width="512">\' >> ${smil_path}/${newFileName}${smail_file}`);
+        exec(`echo \'<video height="720" src="${newFileName}${typeOfFile}" systemLanguage="en" width="1280">\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<param name="videoBitrate" value="192000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<param name="audioBitrate" value="48000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'</video>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'</switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'</body>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'</smil>\' >> ${smil_path}/${newFileName}${smail_file}`);
+
+        //transcode 480
+        exec(`/usr/local/ffmpeg -i "${saveTo}" -c:a copy -c:v libx264 -r 24 -f:v scale=-1:480 -b:v 400k -maxrate 400k -f flv "${save_480}"`,function(error, stdout, stderr){
+          if (error) {
+            console.log('--------err ffmpeg save_480----------', error);
+          };
+
+          //transcode 720
+          exec(`/usr/local/ffmpeg -i "${saveTo}" -c:a copy -c:v libx264 -r 24 -f:v scale=-1:720 -b:v 900k -maxrate 900k -f flv "${save_720}"`,function(error, stdout, stderr){
+            if (error) {
+              console.log('--------err ffmpeg save_720----------', error);
+            };
+
+            //replace file smil
+            exec(`echo \'<?xml version="1.0" encoding="UTF-8"?>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<smil title="${newFileName}">\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<body>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<video height="480" src="${newFileName}${typeOfFile}" systemLanguage="en" width="854">\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<param name="videoBitrate" value="400000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<param name="audioBitrate" value="126000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'</video>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<video height="720" src="${newFileName}${typeOfFile}" systemLanguage="en" width="1280">\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<param name="videoBitrate" value="900000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<param name="audioBitrate" value="126000" valuetype="data"></param>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'</video>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'</switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'</body>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'</smil>\' >> ${smil_path}/${newFileName}${smail_file}`);
+
+          });
+
+        });
+
+
 
       } else {
         res.writeHead(500, { Connection: 'close' });
