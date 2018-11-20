@@ -6,10 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const uuid = require('uuid');
 const exec = require('child_process').exec;
-const port = 3000;
+const port = 3443;
 
 const config = require('./config');
-const smil_path = '/var/www/html/vod';
+const smil_path = '/app/www/vod';
 const smail_file = '.smil'
 
 app.use(bodyParser.json());
@@ -68,14 +68,30 @@ app.post('/upload-video', function (req, res) {
         const previewBig = `${config.imagePath}/big_${newFileName}.jpg`;
         // local: /usr/local/bin/ffmpeg
         // server: /usr/bin/ffmpeg
-        exec(`/usr/local/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
+        exec(`/sbin/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
           if (error) {
-            console.log('--------err cut preview image----------', error);
-          };
+		console.log('--------err cut preview image----------', error);
+	   setTimeout(
+		function(){
+		 	exec(`/usr/local/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`);
+			console.log('cut image');
+		}
+	   , 3000);
+          }
+
           res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
           res.end(responseData);
+
+		//exec(`chmod 644 ${config.imagePath}/small_${newFileName}.jpg`,function(error, stdout, stderr){
+          	//if (error) {
+            	//	console.log('--------err cut chmod image----------', error);
+          	//};
+          	//res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
+          	//res.end(responseData);
+        	//});
+        	//exec(`chmod 644 ${config.imagePath}/big_${newFileName}.jpg`);
         });
-        exec(`echo \'<?xml version="1.0" encoding="UTF-8"?>\' > ${smil_path}/${newFileName}${smail_file}`);
+
         exec(`echo \'<smil title="${newFileName}">\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<body>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
@@ -92,19 +108,19 @@ app.post('/upload-video', function (req, res) {
         exec(`echo \'</smil>\' >> ${smil_path}/${newFileName}${smail_file}`);
 
         //transcode 480
-        exec(`/usr/local/ffmpeg -i "${saveTo}" -c:a copy -c:v libx264 -r 24 -f:v scale=-1:480 -b:v 400k -maxrate 400k -f flv "${save_480}"`,function(error, stdout, stderr){
+        exec(`/sbin/ffmpeg -i "${saveTo}" -c:a copy -c:v libx264 -r 24 -f:v scale=-1:480 -b:v 400k -maxrate 400k -f flv "${save_480}"`,function(error, stdout, stderr){
           if (error) {
             console.log('--------err ffmpeg save_480----------', error);
           };
 
           //transcode 720
-          exec(`/usr/local/ffmpeg -i "${saveTo}" -c:a copy -c:v libx264 -r 24 -f:v scale=-1:720 -b:v 900k -maxrate 900k -f flv "${save_720}"`,function(error, stdout, stderr){
+          exec(`/sbin/ffmpeg -i "${saveTo}" -c:a copy -c:v libx264 -r 24 -f:v scale=-1:720 -b:v 900k -maxrate 900k -f flv "${save_720}"`,function(error, stdout, stderr){
             if (error) {
               console.log('--------err ffmpeg save_720----------', error);
             };
 
             //replace file smil
-            exec(`echo \'<?xml version="1.0" encoding="UTF-8"?>\' >> ${smil_path}/${newFileName}${smail_file}`);
+            exec(`echo \'<?xml version="1.0" encoding="UTF-8"?>\' > ${smil_path}/${newFileName}${smail_file}`);
             exec(`echo \'<smil title="${newFileName}">\' >> ${smil_path}/${newFileName}${smail_file}`);
             exec(`echo \'<body>\' >> ${smil_path}/${newFileName}${smail_file}`);
             exec(`echo \'<switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
@@ -148,7 +164,7 @@ app.get('/delete-video', function (req, res) {
   if(req.query.fileId) {
     const imageSmall = `${config.imagePath}/small_${req.query.fileId}.jpg`;
     const imageBig = `${config.imagePath}/big_${req.query.fileId}.jpg`;
-    const video = `${config.vodPath}/${req.query.fileId}.mp4`
+    const video = `${config.vodPath}/${req.query.fileId}*`;
 
     exec(`rm -rf ${imageSmall} ${imageBig} ${video}`,function(error, stdout, stderr) {
       if (error) {
