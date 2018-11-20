@@ -27,6 +27,8 @@ app.get('/', function (req, res) {
     res.end('API upload-video');
 });
 
+app.use('/img', express.static(`${config.imagePath}`));
+
 app.post('/upload-video', function (req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
