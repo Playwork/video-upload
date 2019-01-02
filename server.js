@@ -76,7 +76,7 @@ app.post('/upload-video', function (req, res) {
 		console.log('--------err cut preview image----------', error);
 	   setTimeout(
 		function(){
-		 	exec(`/sbin/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`);
+	 	exec(`/sbin/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`);
 			console.log('cut image');
 		}
 	   , 3000);
@@ -94,7 +94,7 @@ app.post('/upload-video', function (req, res) {
         	//});
         	//exec(`chmod 644 ${config.imagePath}/big_${newFileName}.jpg`);
         });
-			
+
         exec(`echo \'<smil title="${newFileName}">\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<body>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
