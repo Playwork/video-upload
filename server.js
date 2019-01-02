@@ -1,4 +1,5 @@
 var app = require('express')();
+var express = require('express');
 var bodyParser = require('body-parser');
 const Busboy = require('busboy');
 const inspect = require('util').inspect;
@@ -26,6 +27,8 @@ app.get('/', function (req, res) {
     res.writeHead(200, { 'Connection': 'close' });
     res.end('API upload-video');
 });
+
+app.use('/img', express.static(`${config.imagePath}`));
 
 app.post('/upload-video', function (req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -69,22 +72,29 @@ app.post('/upload-video', function (req, res) {
         // local: /usr/local/bin/ffmpeg
         // server: /usr/bin/ffmpeg
         exec(`/sbin/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`,function(error, stdout, stderr){
-          if (error) {
-            console.log('--------err cut preview image----------', error);
-          };
+          if (error) {    
+		console.log('--------err cut preview image----------', error);
+	   setTimeout(
+		function(){
+		 	exec(`/sbin/ffmpeg -loglevel panic -y -i "${saveTo}" -frames 1 -q:v 1 -vf fps=1,scale=535x346 ${previewBig} -frames 1 -q:v 1 -vf fps=1,scale=200x130 ${previewSmall}`);
+			console.log('cut image');
+		}
+	   , 3000);
+          }
+
           res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
           res.end(responseData);
 
-		exec(`chmod 644 ${config.imagePath}/small_${newFileName}.jpg`,function(error, stdout, stderr){
-          	if (error) {
-            		console.log('--------err cut chmod image----------', error);
-          	};
+		//exec(`chmod 644 ${config.imagePath}/small_${newFileName}.jpg`,function(error, stdout, stderr){
+          	//if (error) {
+            	//	console.log('--------err cut chmod image----------', error);
+          	//};
           	//res.writeHead(200, { 'Connection': 'close', 'Content-Length': responseData.length });
           	//res.end(responseData);
-        	});
-        	exec(`chmod 644 ${config.imagePath}/big_${newFileName}.jpg`);
+        	//});
+        	//exec(`chmod 644 ${config.imagePath}/big_${newFileName}.jpg`);
         });
-		
+			
         exec(`echo \'<smil title="${newFileName}">\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<body>\' >> ${smil_path}/${newFileName}${smail_file}`);
         exec(`echo \'<switch>\' >> ${smil_path}/${newFileName}${smail_file}`);
